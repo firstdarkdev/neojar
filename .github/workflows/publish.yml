@@ -1,0 +1,22 @@
+name: Publish Maven
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set gradlew permission
+        run: chmod +x ./gradlew
+
+      - name: Publish to maven
+        env:
+          DOPPLER_TOKEN: ${{secrets.DOPPLER_TOKEN}}
+        run: ./gradlew publish

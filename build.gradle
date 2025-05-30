@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+    id "com.hypherionmc.modutils.orion" version "1.0.+"
+    id 'maven-publish'
+}
+
+// Edit in gradle.properties
+group = project_group
+version = "${version_major}.${version_minor}.${version_patch}"
+
+orion.setup {
+    enableMirrorMaven = true
+    enableReleasesMaven = true
+
+    dopplerToken = System.getenv("DOPPLER_TOKEN")
+
+    versioning {
+        identifier("release")
+        uploadBuild(true)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("net.neoforged.fancymodloader:loader:2.0.17")
+    implementation("cpw.mods:securejarhandler:2.1.24")
+    implementation("commons-io:commons-io:2.19.0")
+}
+
+jar {
+    manifest {
+        attributes([
+                'FMLModType'     : 'LIBRARY'
+        ])
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId project.archivesBaseName
+            from components.java
+        }
+    }
+
+    repositories {
+        maven orion.getPublishingMaven()
+    }
+}
