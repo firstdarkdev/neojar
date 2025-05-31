@@ -50,11 +50,11 @@ public class ForgeJarInJarLoader extends AbstractModProvider implements IDepende
                 boolean hasSharedLibrary = Boolean.parseBoolean(orionData[2]);
 
                 // Load the NeoForge mod jar
-                loadModFromJar(modFile, String.format("META-INF/orion/%s-forge-%s.jar", modId, modVersion)).ifPresent(modFiles::add);
+                loadModFromJar(modFile, String.format("META-INF/orion/%s-forge-%s.jar", modId, modVersion), false).ifPresent(modFiles::add);
 
                 // Load the Shared Library (de-duplicated classes and resources), if there is one
                 if (hasSharedLibrary) {
-                    loadModFromJar(modFile, String.format("META-INF/orion/%s-shared-%s.jar", modId, modVersion)).ifPresent(modFiles::add);
+                    loadModFromJar(modFile, String.format("META-INF/orion/%s-shared-%s.jar", modId, modVersion), true).ifPresent(modFiles::add);
                 }
             }
 
@@ -65,7 +65,7 @@ public class ForgeJarInJarLoader extends AbstractModProvider implements IDepende
     }
 
     @SuppressWarnings("resource")
-    protected Optional<IModFile> loadModFromJar(IModFile file, String path) {
+    protected Optional<IModFile> loadModFromJar(IModFile file, String path, boolean isSharedLibrary) {
         try {
             // Try to find the jar inside the jar
             var jarFilePath = file.findResource(path);
@@ -75,7 +75,7 @@ public class ForgeJarInJarLoader extends AbstractModProvider implements IDepende
             );
 
             // Create a new ModFile for it
-            return Optional.of(createMod(jarZipFS.getPath("/")).file());
+            return Optional.ofNullable(createMod(jarZipFS.getPath("/"), true, isSharedLibrary ? "LIBRARY" : "MOD").file());
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -99,16 +99,6 @@ public class ForgeJarInJarLoader extends AbstractModProvider implements IDepende
     @Override
     public String name() {
         return "forge-jarinjar";
-    }
-
-    @Override
-    public void scanFile(IModFile iModFile, Consumer<Path> consumer) {
-
-    }
-
-    @Override
-    public void initArguments(Map<String, ?> map) {
-
     }
 
     Path getSourcePath() {

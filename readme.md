@@ -2,16 +2,14 @@
 
 ---
 
-A Custom JarInJar Loader for NeoForge 1.20.4.
+A Custom JarInJar Loader for NeoForge and Forge.
 
-This was made to allow mods that JIJ forge, fabric and neoforge mods into the same jar to load correctly.
+This was made to allow mods to JIJ forge, fabric and neoforge mods into the same jar and load correctly.
 
 ### Why is this needed??
 
-Since Forge and NeoForge both use `mods.toml` in 1.20.4, forge tries to load neoforge mods as forge mods, and crashes because it can't. So this wrapper is used to inject a custom jar-in-jar loader to allow neoforge to load its own mods, without forge catching a fit.
+Because I am lazy, and want to make things easier for my users, by offering them a single jar for all supported modloaders, instead of having a ton of separate jars.
 
-### Again, why??
-
-Well, I wanted to pack some of my mods into the same jar, to make it easier for users to download, and less of a hassle for me to publish. I found out that JIJ from all 3 modloaders work perfectly for this, except when Forge and NeoForge is used on 1.20.4.
+Due to how forge and neoforge works, it can't just load an empty jar, with other jars inside it. This library enables both of these modloaders to load a dummy jar, that contains all the modloader jars inside it.
 
 Used by [orion](https://github.com/firstdarkdev/orion) to package mods into a single jar. 

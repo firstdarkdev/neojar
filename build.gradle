@@ -50,7 +50,7 @@ dependencies {
     forgeImplementation("net.minecraftforge:fmlloader:1.20.4-49.2.0")
     forgeImplementation("net.minecraftforge:securemodules:2.2.21")
 
-    modernForgeImplementation("net.minecraftforge:fmlloader:1.20-46.0.14")
+    modernForgeImplementation("net.minecraftforge:fmlloader:1.21-51.0.33")
     modernForgeImplementation("net.minecraftforge:securemodules:2.2.21") {
         transitive = false
     }
