@@ -24,25 +24,85 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation("net.neoforged.fancymodloader:loader:2.0.17")
-    implementation("cpw.mods:securejarhandler:2.1.24")
-    implementation("commons-io:commons-io:2.19.0")
+var commonImplementation = configurations.create("commonImplementation")
+
+sourceSets {
+    forge
+    neoforge
+    neoForgeModern
 }
 
-jar {
-    manifest {
-        attributes([
-                'FMLModType'     : 'LIBRARY'
-        ])
+sourceSets.configureEach {
+    var configName = "${name}Implementation"
+
+    if (name == "main")
+        configName = "implementation"
+
+    configurations.named(configName).configure {
+        extendsFrom(commonImplementation)
     }
+}
+
+dependencies {
+    add("commonImplementation", "commons-io:commons-io:2.19.0")
+
+    forgeImplementation("net.minecraftforge:fmlloader:1.20.4-49.2.0")
+    forgeImplementation("net.minecraftforge:securemodules:2.2.21")
+
+    neoforgeImplementation("net.neoforged.fancymodloader:loader:2.0.17")
+    neoforgeImplementation("cpw.mods:securejarhandler:2.1.24")
+
+    neoForgeModernImplementation("net.neoforged.fancymodloader:loader:4.0.39")
+    neoForgeModernImplementation("cpw.mods:securejarhandler:3.0.8")
+}
+
+compileForgeJava {
+    it.options.release = 17
+    it.options.encoding = "UTF-8"
+}
+
+compileNeoforgeJava {
+    it.options.release = 17
+    it.options.encoding = "UTF-8"
+}
+
+tasks.register("buildJar", org.gradle.jvm.tasks.Jar) {
+    dependsOn(compileForgeJava, compileNeoforgeJava, processNeoforgeResources, processForgeResources)
+    from(compileNeoforgeJava.destinationDirectory, compileForgeJava.destinationDirectory,
+            processNeoforgeResources.destinationDir, processForgeResources.destinationDir
+    )
+    exclude("*.bin")
+}
+
+compileForgeJava {
+    it.options.release = 17
+    it.options.encoding = "UTF-8"
+}
+
+compileNeoforgeJava {
+    it.options.release = 17
+    it.options.encoding = "UTF-8"
+}
+
+compileNeoForgeModernJava {
+    it.options.release = 21
+    it.options.encoding = "UTF-8"
+}
+
+tasks.register("buildModernJar", org.gradle.jvm.tasks.Jar) {
+    dependsOn(compileForgeJava, compileNeoForgeModernJava, processNeoForgeModernResources, processForgeResources)
+    from(compileNeoForgeModernJava.destinationDirectory, compileForgeJava.destinationDirectory,
+            processNeoForgeModernResources.destinationDir, processForgeResources.destinationDir
+    )
+    exclude("*.bin")
+    archiveClassifier.set("modern")
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId project.archivesBaseName
-            from components.java
+            artifact(buildJar)
+            artifact(buildModernJar)
         }
     }
 
