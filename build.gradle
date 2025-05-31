@@ -28,6 +28,7 @@ var commonImplementation = configurations.create("commonImplementation")
 
 sourceSets {
     forge
+    modernForge
     neoforge
     neoForgeModern
 }
@@ -48,6 +49,11 @@ dependencies {
 
     forgeImplementation("net.minecraftforge:fmlloader:1.20.4-49.2.0")
     forgeImplementation("net.minecraftforge:securemodules:2.2.21")
+
+    modernForgeImplementation("net.minecraftforge:fmlloader:1.20-46.0.14")
+    modernForgeImplementation("net.minecraftforge:securemodules:2.2.21") {
+        transitive = false
+    }
 
     neoforgeImplementation("net.neoforged.fancymodloader:loader:2.0.17")
     neoforgeImplementation("cpw.mods:securejarhandler:2.1.24")
@@ -84,15 +90,20 @@ compileNeoforgeJava {
     it.options.encoding = "UTF-8"
 }
 
+compileModernForgeJava {
+    it.options.release = 21
+    it.options.encoding = "UTF-8"
+}
+
 compileNeoForgeModernJava {
     it.options.release = 21
     it.options.encoding = "UTF-8"
 }
 
 tasks.register("buildModernJar", org.gradle.jvm.tasks.Jar) {
-    dependsOn(compileForgeJava, compileNeoForgeModernJava, processNeoForgeModernResources, processForgeResources)
-    from(compileNeoForgeModernJava.destinationDirectory, compileForgeJava.destinationDirectory,
-            processNeoForgeModernResources.destinationDir, processForgeResources.destinationDir
+    dependsOn(compileModernForgeJava, compileNeoForgeModernJava, processNeoForgeModernResources, processModernForgeResources)
+    from(compileNeoForgeModernJava.destinationDirectory, compileModernForgeJava.destinationDirectory,
+            processNeoForgeModernResources.destinationDir, processModernForgeResources.destinationDir
     )
     exclude("*.bin")
     archiveClassifier.set("modern")
